@@ -44,6 +44,9 @@ namespace CompilerLabs {
     typedef CompilerLabs::U64 LineNumber;
     typedef CompilerLabs::Index CharacterIndex;
 
+    // text defines
+    typedef CompilerLabs::Length ListContentLength;
+
     // default list increase
     const CompilerLabs::Increase DefaultListIncrease = 1024;
 
@@ -113,6 +116,43 @@ namespace CompilerLabs {
             range = _range;
             progress = _progress;
         }
+    };
+
+    // a list of bytes, instead of a list of <T>
+    class ByteList {
+    public:
+        CompilerLabs::Buffer allocation;
+        CompilerLabs::ListContentLength length;
+        CompilerLabs::Increase increase;
+
+        // constructors
+        ByteList() {
+            allocation = CompilerLabs::Buffer();
+            length = 0;
+            increase = CompilerLabs::DefaultListIncrease;
+        }
+        ByteList(CompilerLabs::Increase _increase) {
+            // set increase
+            increase = _increase;
+
+            // allocate list buffer
+            allocation.Allocate(increase);
+            
+            // setup length
+            length = 0;
+        }
+
+        // close list
+        ~ByteList() {
+            allocation.Deallocate();
+        }
+
+        // calculate content buffer
+        CompilerLabs::Buffer GetContentBuffer() {
+            return CompilerLabs::Buffer(allocation.start, allocation.start + length - 1);
+        }
+
+        // append buffer
     };
 
     // tabs

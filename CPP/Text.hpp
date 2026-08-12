@@ -25,4 +25,10 @@ namespace CompilerLabs {
             range = CompilerLabs::Buffer();
         }
     };
+
+    // Compiler Labs version of a string
+    class Text {
+    public:
+        CompilerLabs::List data;
+    };
 }
