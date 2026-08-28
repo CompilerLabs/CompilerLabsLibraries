@@ -2,7 +2,7 @@
 
 #include "Basic.hpp"
 
-namespace CompilerLabs {
+namespace CompilerLabs::Strings {
     // string length
     typedef CompilerLabs::Length StringLength;
 
@@ -24,11 +24,5 @@ namespace CompilerLabs {
             lineNumber = 0;
             range = CompilerLabs::Buffer();
         }
-    };
-
-    // Compiler Labs version of a string
-    class Text {
-    public:
-        CompilerLabs::List data;
     };
 }

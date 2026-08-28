@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Basic.hpp"
-#include "Text.hpp"
-#include "Log.hpp"
+#include "Strings.hpp"
+#include "Logs.hpp"
 #include <string>
 
-namespace CompilerLabs {
+namespace CompilerLabs::JSON {
     enum class LexlingType {
         Invalid,
         LeftSquareBracket,
@@ -24,16 +24,16 @@ namespace CompilerLabs {
 
     class Lexling {
     public:
-        CompilerLabs::LexlingType type;
+        CompilerLabs::JSON::LexlingType type;
         std::string stringedValue;
-        CompilerLabs::TextLocation location;
+        CompilerLabs::Strings::TextLocation location;
 
         Lexling() {
-            type = CompilerLabs::LexlingType::Invalid;
+            type = CompilerLabs::JSON::LexlingType::Invalid;
             stringedValue = "";
-            location = CompilerLabs::TextLocation();
+            location = CompilerLabs::Strings::TextLocation();
         }
-        Lexling(CompilerLabs::LexlingType _type, std::string _stringedValue, CompilerLabs::TextLocation _location) {
+        Lexling(CompilerLabs::JSON::LexlingType _type, std::string _stringedValue, CompilerLabs::Strings::TextLocation _location) {
             type = _type;
             stringedValue = _stringedValue;
             location = _location;
@@ -54,41 +54,41 @@ namespace CompilerLabs {
     class Item {
     public:
         // the type of item
-        CompilerLabs::ItemType type;
+        CompilerLabs::JSON::ItemType type;
 
         // the name assigned to the item
-        CompilerLabs::Lexling name;
+        CompilerLabs::JSON::Lexling name;
 
         // possible states (null does not require value as type is sufficient)
-        CompilerLabs::Lexling stringValue;
-        CompilerLabs::Lexling numberValue;
+        CompilerLabs::JSON::Lexling stringValue;
+        CompilerLabs::JSON::Lexling numberValue;
         CompilerLabs::Boolean booleanValue;
-        std::vector<CompilerLabs::Item> objectBody;
-        std::vector<CompilerLabs::Item> arrayBody;
+        std::vector<CompilerLabs::JSON::Item> objectBody;
+        std::vector<CompilerLabs::JSON::Item> arrayBody;
         
         // constructors
         Item() {
-            type = CompilerLabs::ItemType::Invalid;
-            name = CompilerLabs::Lexling();
-            numberValue = CompilerLabs::Lexling();
+            type = CompilerLabs::JSON::ItemType::Invalid;
+            name = CompilerLabs::JSON::Lexling();
+            numberValue = CompilerLabs::JSON::Lexling();
             booleanValue = false;
-            objectBody = std::vector<CompilerLabs::Item>();
-            arrayBody = std::vector<CompilerLabs::Item>();
+            objectBody = std::vector<CompilerLabs::JSON::Item>();
+            arrayBody = std::vector<CompilerLabs::JSON::Item>();
         }
     };
 
     class Root {
     public:
-        std::vector<CompilerLabs::Lexling> lexlings;
-        CompilerLabs::Item masterObject;
+        std::vector<CompilerLabs::JSON::Lexling> lexlings;
+        CompilerLabs::JSON::Item masterObject;
     };
 
     class JSONCompiler {
     public:
         // compile json into C++ data
-        CompilerLabs::Root CompileJSON(CompilerLabs::Log* log, std::string& json) {
+        CompilerLabs::JSON::Root CompileJSON(CompilerLabs::Logs::Log* log, std::string& json) {
             // setup output
-            CompilerLabs::Root output;
+            CompilerLabs::JSON::Root output;
 
             // lex
             output.lexlings = Lex(log, json);
@@ -137,9 +137,9 @@ namespace CompilerLabs {
         }
 
         // lex file
-        std::vector<CompilerLabs::Lexling> Lex(CompilerLabs::Log* log, std::string& input) {
+        std::vector<CompilerLabs::JSON::Lexling> Lex(CompilerLabs::Logs::Log* log, std::string& input) {
             // setup output
-            std::vector<CompilerLabs::Lexling> output = std::vector<CompilerLabs::Lexling>();
+            std::vector<CompilerLabs::JSON::Lexling> output = std::vector<CompilerLabs::JSON::Lexling>();
             CompilerLabs::FileIndex fileIndex = 0;
             CompilerLabs::LineNumber lineNumber = 1;
             CompilerLabs::CharacterIndex index = 0;
@@ -162,31 +162,31 @@ namespace CompilerLabs {
 
                 // check for lexlings
                 if (LexingCheckCharacterRange('[', input[index], '[')) {
-                    output.push_back(CompilerLabs::Lexling(CompilerLabs::LexlingType::LeftSquareBracket, "[", CompilerLabs::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)index))));
+                    output.push_back(CompilerLabs::JSON::Lexling(CompilerLabs::JSON::LexlingType::LeftSquareBracket, "[", CompilerLabs::Strings::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)index))));
                     index++;
                 } else if (LexingCheckCharacterRange(']', input[index], ']')) {
-                    output.push_back(CompilerLabs::Lexling(CompilerLabs::LexlingType::RightSquareBracket, "]", CompilerLabs::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)index))));
+                    output.push_back(CompilerLabs::JSON::Lexling(CompilerLabs::JSON::LexlingType::RightSquareBracket, "]", CompilerLabs::Strings::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)index))));
                     index++;
                 } else if (LexingCheckCharacterRange('{', input[index], '{')) {
-                    output.push_back(CompilerLabs::Lexling(CompilerLabs::LexlingType::LeftCurlyBracket, "{", CompilerLabs::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)index))));
+                    output.push_back(CompilerLabs::JSON::Lexling(CompilerLabs::JSON::LexlingType::LeftCurlyBracket, "{", CompilerLabs::Strings::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)index))));
                     index++;
                 } else if (LexingCheckCharacterRange('}', input[index], '}')) {
-                    output.push_back(CompilerLabs::Lexling(CompilerLabs::LexlingType::RightCurlyBracket, "}", CompilerLabs::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)index))));
+                    output.push_back(CompilerLabs::JSON::Lexling(CompilerLabs::JSON::LexlingType::RightCurlyBracket, "}", CompilerLabs::Strings::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)index))));
                     index++;
                 } else if (LexingCheckCharacterRange(':', input[index], ':')) {
-                    output.push_back(CompilerLabs::Lexling(CompilerLabs::LexlingType::Colon, ":", CompilerLabs::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)index))));
+                    output.push_back(CompilerLabs::JSON::Lexling(CompilerLabs::JSON::LexlingType::Colon, ":", CompilerLabs::Strings::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)index))));
                     index++;
                 } else if (LexingCheckCharacterRange(',', input[index], ',')) {
-                    output.push_back(CompilerLabs::Lexling(CompilerLabs::LexlingType::Comma, ",", CompilerLabs::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)index))));
+                    output.push_back(CompilerLabs::JSON::Lexling(CompilerLabs::JSON::LexlingType::Comma, ",", CompilerLabs::Strings::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)index))));
                     index++;
                 } else if (LexingCheckForSubStringAtIndex(input, "false", index)) {
-                    output.push_back(CompilerLabs::Lexling(CompilerLabs::LexlingType::False, "false", CompilerLabs::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)(index + (CompilerLabs::CharacterIndex)std::string("false").length())))));
+                    output.push_back(CompilerLabs::JSON::Lexling(CompilerLabs::JSON::LexlingType::False, "false", CompilerLabs::Strings::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)(index + (CompilerLabs::CharacterIndex)std::string("false").length())))));
                     index += std::string("false").length();
                 } else if (LexingCheckForSubStringAtIndex(input, "true", index)) {
-                    output.push_back(CompilerLabs::Lexling(CompilerLabs::LexlingType::True, "true", CompilerLabs::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)(index + (CompilerLabs::CharacterIndex)std::string("true").length())))));
+                    output.push_back(CompilerLabs::JSON::Lexling(CompilerLabs::JSON::LexlingType::True, "true", CompilerLabs::Strings::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)(index + (CompilerLabs::CharacterIndex)std::string("true").length())))));
                     index += std::string("true").length();
                 } else if (LexingCheckForSubStringAtIndex(input, "null", index)) {
-                    output.push_back(CompilerLabs::Lexling(CompilerLabs::LexlingType::Null, "null", CompilerLabs::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)(index + (CompilerLabs::CharacterIndex)std::string("null").length())))));
+                    output.push_back(CompilerLabs::JSON::Lexling(CompilerLabs::JSON::LexlingType::Null, "null", CompilerLabs::Strings::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)index, (CompilerLabs::Address)(index + (CompilerLabs::CharacterIndex)std::string("null").length())))));
                     index += std::string("null").length();
                 } else if (LexingCheckCharacterRange('"', input[index], '"')) {
                     // setup string start
@@ -213,7 +213,7 @@ namespace CompilerLabs {
                         // check for end of string
                         if (LexingCheckCharacterRange('"', input[index], '"')) {
                             // push lexling
-                            output.push_back(CompilerLabs::Lexling(CompilerLabs::LexlingType::String, input.substr(startingIndex, index - startingIndex + 1), CompilerLabs::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)startingIndex, (CompilerLabs::Address)index))));
+                            output.push_back(CompilerLabs::JSON::Lexling(CompilerLabs::JSON::LexlingType::String, input.substr(startingIndex, index - startingIndex + 1), CompilerLabs::Strings::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)startingIndex, (CompilerLabs::Address)index))));
 
                             // skip past ending quote
                             index++;
@@ -252,7 +252,7 @@ namespace CompilerLabs {
                     }
 
                     // append lexling
-                    output.push_back(CompilerLabs::Lexling(CompilerLabs::LexlingType::Number, input.substr(startingIndex, endingIndex - startingIndex), CompilerLabs::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)startingIndex, (CompilerLabs::Address)endingIndex))));
+                    output.push_back(CompilerLabs::JSON::Lexling(CompilerLabs::JSON::LexlingType::Number, input.substr(startingIndex, endingIndex - startingIndex), CompilerLabs::Strings::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)startingIndex, (CompilerLabs::Address)endingIndex))));
 
                     // next character
                     index++;
@@ -266,18 +266,18 @@ namespace CompilerLabs {
 
             // append EndOfFile lexling
             quit:
-            output.push_back(CompilerLabs::Lexling(CompilerLabs::LexlingType::EndOfFile, "[EndOfFile]", CompilerLabs::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)input.length(), (CompilerLabs::Address)input.length()))));
+            output.push_back(CompilerLabs::JSON::Lexling(CompilerLabs::JSON::LexlingType::EndOfFile, "[EndOfFile]", CompilerLabs::Strings::TextLocation(fileIndex, lineNumber, CompilerLabs::Buffer((CompilerLabs::Address)input.length(), (CompilerLabs::Address)input.length()))));
 
             return output;
         }
 
         // parse lexlings
-        CompilerLabs::Item Parse(CompilerLabs::Log* log, std::vector<CompilerLabs::Lexling>& lexlings) {
-            CompilerLabs::Item output;
+        CompilerLabs::JSON::Item Parse(CompilerLabs::Logs::Log* log, std::vector<CompilerLabs::JSON::Lexling>& lexlings) {
+            CompilerLabs::JSON::Item output;
             CompilerLabs::Index currentIndex = 0;
 
             // check for empty file
-            if (lexlings[currentIndex].type == CompilerLabs::LexlingType::EndOfFile) {
+            if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::EndOfFile) {
                 // error, nothing in file
                 log->LogError("JSON Error. File is empty.");
 
@@ -285,21 +285,21 @@ namespace CompilerLabs {
             }
 
             // parse root object
-            output.type = CompilerLabs::ItemType::Object;
+            output.type = CompilerLabs::JSON::ItemType::Object;
             output.objectBody = ParseObjectBody(log, lexlings, currentIndex);
 
             return output;
         }
 
         // parse object body
-        std::vector<CompilerLabs::Item> ParseObjectBody(CompilerLabs::Log* log, std::vector<CompilerLabs::Lexling>& lexlings, CompilerLabs::Index& currentIndex) {
-            std::vector<CompilerLabs::Item> output;
+        std::vector<CompilerLabs::JSON::Item> ParseObjectBody(CompilerLabs::Logs::Log* log, std::vector<CompilerLabs::JSON::Lexling>& lexlings, CompilerLabs::Index& currentIndex) {
+            std::vector<CompilerLabs::JSON::Item> output;
 
             // create comma tracker
             CompilerLabs::Index commaIndex = 0;
 
             // if object body is missing container
-            if (lexlings[currentIndex].type != CompilerLabs::LexlingType::LeftCurlyBracket) {
+            if (lexlings[currentIndex].type != CompilerLabs::JSON::LexlingType::LeftCurlyBracket) {
                 log->LogError("JSON Error. Object body is missing opening left curly bracket. Line Numberr: " + std::to_string(lexlings[currentIndex].location.lineNumber));
 
                 return output;
@@ -309,19 +309,19 @@ namespace CompilerLabs {
             }
 
             // loop over body
-            while (lexlings[currentIndex].type != CompilerLabs::LexlingType::RightCurlyBracket) {
+            while (lexlings[currentIndex].type != CompilerLabs::JSON::LexlingType::RightCurlyBracket) {
                 // setup temp item
-                CompilerLabs::Item tempItem;
-                tempItem.type = CompilerLabs::ItemType::Invalid;
+                CompilerLabs::JSON::Item tempItem;
+                tempItem.type = CompilerLabs::JSON::ItemType::Invalid;
 
                 // if requires comma
-                if (commaIndex > 0 && lexlings[currentIndex].type == CompilerLabs::LexlingType::Comma) {
+                if (commaIndex > 0 && lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::Comma) {
                     // next lexling index
                     currentIndex++;
                 }
 
                 // check for name string
-                if (lexlings[currentIndex].type == CompilerLabs::LexlingType::String) {
+                if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::String) {
                     // set name
                     tempItem.name = lexlings[currentIndex];
                     currentIndex++;
@@ -333,7 +333,7 @@ namespace CompilerLabs {
                 }
 
                 // check for colon
-                if (lexlings[currentIndex].type == CompilerLabs::LexlingType::Colon) {
+                if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::Colon) {
                     // skip past colon
                     currentIndex++;
                 // colon not found
@@ -344,47 +344,47 @@ namespace CompilerLabs {
                 }
 
                 // parse data
-                if (lexlings[currentIndex].type == CompilerLabs::LexlingType::Null) {
+                if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::Null) {
                     // set type
-                    tempItem.type = CompilerLabs::ItemType::Null;
+                    tempItem.type = CompilerLabs::JSON::ItemType::Null;
 
                     // advance
                     currentIndex++;
-                } else if (lexlings[currentIndex].type == CompilerLabs::LexlingType::False) {
+                } else if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::False) {
                     // set type
-                    tempItem.type = CompilerLabs::ItemType::False;
+                    tempItem.type = CompilerLabs::JSON::ItemType::False;
                     tempItem.booleanValue = false;
 
                     // advance
                     currentIndex++;
-                } else if (lexlings[currentIndex].type == CompilerLabs::LexlingType::True) {
+                } else if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::True) {
                     // set type
-                    tempItem.type = CompilerLabs::ItemType::True;
+                    tempItem.type = CompilerLabs::JSON::ItemType::True;
                     tempItem.booleanValue = true;
 
                     // advance
                     currentIndex++;
-                } else if (lexlings[currentIndex].type == CompilerLabs::LexlingType::String) {
+                } else if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::String) {
                     // set type
-                    tempItem.type = CompilerLabs::ItemType::String;
+                    tempItem.type = CompilerLabs::JSON::ItemType::String;
                     tempItem.stringValue = lexlings[currentIndex];
 
                     // advance
                     currentIndex++;
-                } else if (lexlings[currentIndex].type == CompilerLabs::LexlingType::Number) {
+                } else if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::Number) {
                     // set type
-                    tempItem.type = CompilerLabs::ItemType::Number;
+                    tempItem.type = CompilerLabs::JSON::ItemType::Number;
                     tempItem.numberValue = lexlings[currentIndex];
 
                     // advance
                     currentIndex++;
-                } else if (lexlings[currentIndex].type == CompilerLabs::LexlingType::LeftCurlyBracket) {
+                } else if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::LeftCurlyBracket) {
                     // set item
-                    tempItem.type = CompilerLabs::ItemType::Object;
+                    tempItem.type = CompilerLabs::JSON::ItemType::Object;
                     tempItem.objectBody = ParseObjectBody(log, lexlings, currentIndex);
-                } else if (lexlings[currentIndex].type == CompilerLabs::LexlingType::LeftSquareBracket) {
+                } else if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::LeftSquareBracket) {
                     // set item
-                    tempItem.type = CompilerLabs::ItemType::Array;
+                    tempItem.type = CompilerLabs::JSON::ItemType::Array;
                     tempItem.arrayBody = ParseArrayBody(log, lexlings, currentIndex);
                 // error
                 } else {
@@ -406,7 +406,7 @@ namespace CompilerLabs {
             }
 
             // check for right curly brace
-            if (lexlings[currentIndex].type == CompilerLabs::LexlingType::RightCurlyBracket) {
+            if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::RightCurlyBracket) {
                 currentIndex++;
             }
 
@@ -414,14 +414,14 @@ namespace CompilerLabs {
         }
 
         // parse array body
-        std::vector<CompilerLabs::Item> ParseArrayBody(CompilerLabs::Log* log, std::vector<CompilerLabs::Lexling>& lexlings, CompilerLabs::Index& currentIndex) {
-            std::vector<CompilerLabs::Item> output;
+        std::vector<CompilerLabs::JSON::Item> ParseArrayBody(CompilerLabs::Logs::Log* log, std::vector<CompilerLabs::JSON::Lexling>& lexlings, CompilerLabs::Index& currentIndex) {
+            std::vector<CompilerLabs::JSON::Item> output;
 
             // create comma tracker
             CompilerLabs::Index commaIndex = 0;
 
             // if object body is missing container
-            if (lexlings[currentIndex].type != CompilerLabs::LexlingType::LeftSquareBracket) {
+            if (lexlings[currentIndex].type != CompilerLabs::JSON::LexlingType::LeftSquareBracket) {
                 log->LogError("JSON Error. Array body is missing opening left square bracket. Line Number: " + std::to_string(lexlings[currentIndex].location.lineNumber));
 
                 return output;
@@ -431,59 +431,59 @@ namespace CompilerLabs {
             }
 
             // loop over body
-            while (lexlings[currentIndex].type != CompilerLabs::LexlingType::RightSquareBracket) {
+            while (lexlings[currentIndex].type != CompilerLabs::JSON::LexlingType::RightSquareBracket) {
                 // setup temp item
-                CompilerLabs::Item tempItem;
-                tempItem.type = CompilerLabs::ItemType::Invalid;
+                CompilerLabs::JSON::Item tempItem;
+                tempItem.type = CompilerLabs::JSON::ItemType::Invalid;
 
                 // if requires comma
-                if (commaIndex > 0 && lexlings[currentIndex].type == CompilerLabs::LexlingType::Comma) {
+                if (commaIndex > 0 && lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::Comma) {
                     // next lexling index
                     currentIndex++;
                 }
 
                 // parse data
-                if (lexlings[currentIndex].type == CompilerLabs::LexlingType::Null) {
+                if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::Null) {
                     // set type
-                    tempItem.type = CompilerLabs::ItemType::Null;
+                    tempItem.type = CompilerLabs::JSON::ItemType::Null;
 
                     // advance
                     currentIndex++;
-                } else if (lexlings[currentIndex].type == CompilerLabs::LexlingType::False) {
+                } else if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::False) {
                     // set type
-                    tempItem.type = CompilerLabs::ItemType::False;
+                    tempItem.type = CompilerLabs::JSON::ItemType::False;
                     tempItem.booleanValue = false;
 
                     // advance
                     currentIndex++;
-                } else if (lexlings[currentIndex].type == CompilerLabs::LexlingType::True) {
+                } else if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::True) {
                     // set type
-                    tempItem.type = CompilerLabs::ItemType::True;
+                    tempItem.type = CompilerLabs::JSON::ItemType::True;
                     tempItem.booleanValue = true;
 
                     // advance
                     currentIndex++;
-                } else if (lexlings[currentIndex].type == CompilerLabs::LexlingType::String) {
+                } else if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::String) {
                     // set type
-                    tempItem.type = CompilerLabs::ItemType::String;
+                    tempItem.type = CompilerLabs::JSON::ItemType::String;
                     tempItem.stringValue = lexlings[currentIndex];
 
                     // advance
                     currentIndex++;
-                } else if (lexlings[currentIndex].type == CompilerLabs::LexlingType::Number) {
+                } else if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::Number) {
                     // set type
-                    tempItem.type = CompilerLabs::ItemType::Number;
+                    tempItem.type = CompilerLabs::JSON::ItemType::Number;
                     tempItem.numberValue = lexlings[currentIndex];
 
                     // advance
                     currentIndex++;
-                } else if (lexlings[currentIndex].type == CompilerLabs::LexlingType::LeftCurlyBracket) {
+                } else if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::LeftCurlyBracket) {
                     // set item
-                    tempItem.type = CompilerLabs::ItemType::Object;
+                    tempItem.type = CompilerLabs::JSON::ItemType::Object;
                     tempItem.objectBody = ParseObjectBody(log, lexlings, currentIndex);
-                } else if (lexlings[currentIndex].type == CompilerLabs::LexlingType::LeftSquareBracket) {
+                } else if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::LeftSquareBracket) {
                     // set item
-                    tempItem.type = CompilerLabs::ItemType::Array;
+                    tempItem.type = CompilerLabs::JSON::ItemType::Array;
                     tempItem.arrayBody = ParseArrayBody(log, lexlings, currentIndex);
                 // error
                 } else {
@@ -505,7 +505,7 @@ namespace CompilerLabs {
             }
 
             // check for right square brace
-            if (lexlings[currentIndex].type == CompilerLabs::LexlingType::RightSquareBracket) {
+            if (lexlings[currentIndex].type == CompilerLabs::JSON::LexlingType::RightSquareBracket) {
                 currentIndex++;
             }
 
@@ -514,13 +514,13 @@ namespace CompilerLabs {
 
     public:
         // turn json root into json string
-        std::string JSONToString(CompilerLabs::Root parsedJSON) {
+        std::string JSONToString(CompilerLabs::JSON::Root parsedJSON) {
             return JSONItemToString(parsedJSON.masterObject, false, 0) + "\n";
         }
 
     private:
         // stringify JSON
-        std::string JSONItemToString(CompilerLabs::Item item, CompilerLabs::Boolean requiresName, CompilerLabs::TabDepth tabDepth) {
+        std::string JSONItemToString(CompilerLabs::JSON::Item item, CompilerLabs::Boolean requiresName, CompilerLabs::TabDepth tabDepth) {
             std::string output = "";
             CompilerLabs::Tabs tabs = CompilerLabs::Tabs("\t", tabDepth);
 
@@ -532,7 +532,7 @@ namespace CompilerLabs {
             }
 
             // append each item based on type
-            if (item.type == CompilerLabs::ItemType::Object) {
+            if (item.type == CompilerLabs::JSON::ItemType::Object) {
                 // append opening brace
                 output += "{\n";
 
@@ -552,7 +552,7 @@ namespace CompilerLabs {
 
                 // append closing brace
                 output += tabs.GenerateTabs() + "}";
-            } else if (item.type == CompilerLabs::ItemType::Array) {
+            } else if (item.type == CompilerLabs::JSON::ItemType::Array) {
                 // append opening brace
                 output += "[\n";
 
@@ -572,15 +572,15 @@ namespace CompilerLabs {
 
                 // append closing brace
                 output += tabs.GenerateTabs() + "]";
-            } else if (item.type == CompilerLabs::ItemType::False) {
+            } else if (item.type == CompilerLabs::JSON::ItemType::False) {
                 output += "false";
-            } else if (item.type == CompilerLabs::ItemType::True) {
+            } else if (item.type == CompilerLabs::JSON::ItemType::True) {
                 output += + "true";
-            } else if (item.type == CompilerLabs::ItemType::Null) {
+            } else if (item.type == CompilerLabs::JSON::ItemType::Null) {
                 output += + "null";
-            } else if (item.type == CompilerLabs::ItemType::String) {
+            } else if (item.type == CompilerLabs::JSON::ItemType::String) {
                 output += item.stringValue.stringedValue;
-            } else if (item.type == CompilerLabs::ItemType::Number) {
+            } else if (item.type == CompilerLabs::JSON::ItemType::Number) {
                 output += item.numberValue.stringedValue;
             } else {
                 output += "[INVALID]";

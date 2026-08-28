@@ -6,7 +6,7 @@
 #include <vector>
 #include <iostream>
 
-namespace CompilerLabs {
+namespace CompilerLabs::Logs {
     // log entry type
     enum class EntryType {
         Note,
@@ -40,14 +40,14 @@ namespace CompilerLabs {
     // one log entry
     class LogEntry {
     public:
-        CompilerLabs::EntryType type;
+        CompilerLabs::Logs::EntryType type;
         std::string message;
-        std::vector<CompilerLabs::LogEntrySubdata> extras;
+        std::vector<CompilerLabs::Logs::LogEntrySubdata> extras;
 
         // constructors
         LogEntry() {
             message = "(No message.)";
-            type = CompilerLabs::EntryType::Note;
+            type = CompilerLabs::Logs::EntryType::Note;
         }
 
         // print entry
@@ -57,16 +57,16 @@ namespace CompilerLabs {
 
             // check type
             switch (type) {
-            case CompilerLabs::EntryType::Note:
+            case CompilerLabs::Logs::EntryType::Note:
                 entryTypeString = "Note";
                 break;
-            case CompilerLabs::EntryType::Warning:
+            case CompilerLabs::Logs::EntryType::Warning:
                 entryTypeString = "Warning";
                 break;
-            case CompilerLabs::EntryType::Error:
+            case CompilerLabs::Logs::EntryType::Error:
                 entryTypeString = "Error";
                 break;
-            case CompilerLabs::EntryType::CriticalError:
+            case CompilerLabs::Logs::EntryType::CriticalError:
                 entryTypeString = "CriticalError";
                 break;
             default:
@@ -96,7 +96,7 @@ namespace CompilerLabs {
         CompilerLabs::Tabs tabs;
 
     public:
-        std::vector<CompilerLabs::LogEntry> entries;
+        std::vector<CompilerLabs::Logs::LogEntry> entries;
         CompilerLabs::Tabs tabManager;
         CompilerLabs::Boolean loggingEnabled;
         CompilerLabs::Boolean printLogLive;
@@ -123,11 +123,11 @@ namespace CompilerLabs {
         }
 
         // add any type of entry to log
-        void LogAny(CompilerLabs::EntryType type, std::string message, CompilerLabs::Boolean isNormalError, CompilerLabs::Boolean isCriticalError, std::initializer_list<CompilerLabs::LogEntrySubdata> extras) {
+        void LogAny(CompilerLabs::Logs::EntryType type, std::string message, CompilerLabs::Boolean isNormalError, CompilerLabs::Boolean isCriticalError, std::initializer_list<CompilerLabs::Logs::LogEntrySubdata> extras) {
             // check for logging enabled or not
             if (loggingEnabled) {
                 // create log entry
-                CompilerLabs::LogEntry entry;
+                CompilerLabs::Logs::LogEntry entry;
                 entry.type = type;
                 entry.message = message;
                 normalErrorOccured = isNormalError;
@@ -147,19 +147,19 @@ namespace CompilerLabs {
 
                     // select color based on entry type
                     switch (entry.type) {
-                    case CompilerLabs::EntryType::Note:
+                    case CompilerLabs::Logs::EntryType::Note:
                         colorValue = "\033[32m";
 
                         break;
-                    case CompilerLabs::EntryType::Warning:
+                    case CompilerLabs::Logs::EntryType::Warning:
                         colorValue = "\033[33m";
 
                         break;
-                    case CompilerLabs::EntryType::Error:
+                    case CompilerLabs::Logs::EntryType::Error:
                         colorValue = "\033[1;31m";
 
                         break;
-                    case CompilerLabs::EntryType::CriticalError:
+                    case CompilerLabs::Logs::EntryType::CriticalError:
                         colorValue = "\033[4;31m";
 
                         break;
@@ -176,43 +176,43 @@ namespace CompilerLabs {
         }
 
         // add note to log
-        void LogNote(std::string message, std::initializer_list<CompilerLabs::LogEntrySubdata> extras) {
+        void LogNote(std::string message, std::initializer_list<CompilerLabs::Logs::LogEntrySubdata> extras) {
             // log
-            LogAny(CompilerLabs::EntryType::Note, message, false, false, extras);
+            LogAny(CompilerLabs::Logs::EntryType::Note, message, false, false, extras);
         }
         void LogNote(std::string message) {
             // log
-            LogAny(CompilerLabs::EntryType::Note, message, false, false, {});
+            LogAny(CompilerLabs::Logs::EntryType::Note, message, false, false, {});
         }
 
         // add warning to log
-        void LogWarning(std::string message, std::initializer_list<CompilerLabs::LogEntrySubdata> extras) {
+        void LogWarning(std::string message, std::initializer_list<CompilerLabs::Logs::LogEntrySubdata> extras) {
             // log
-            LogAny(CompilerLabs::EntryType::Warning, message, false, false, extras);
+            LogAny(CompilerLabs::Logs::EntryType::Warning, message, false, false, extras);
         }
         void LogWarning(std::string message) {
             // log
-            LogAny(CompilerLabs::EntryType::Warning, message, false, false, {});
+            LogAny(CompilerLabs::Logs::EntryType::Warning, message, false, false, {});
         }
 
         // add error to log
-        void LogError(std::string message, std::initializer_list<CompilerLabs::LogEntrySubdata> extras) {
+        void LogError(std::string message, std::initializer_list<CompilerLabs::Logs::LogEntrySubdata> extras) {
             // log
-            LogAny(CompilerLabs::EntryType::Error, message, true, false, extras);
+            LogAny(CompilerLabs::Logs::EntryType::Error, message, true, false, extras);
         }
         void LogError(std::string message) {
             // log
-            LogAny(CompilerLabs::EntryType::Error, message, true, false, {});
+            LogAny(CompilerLabs::Logs::EntryType::Error, message, true, false, {});
         }
 
         // add critical error to log
-        void LogCriticalError(std::string message, std::initializer_list<CompilerLabs::LogEntrySubdata> extras) {
+        void LogCriticalError(std::string message, std::initializer_list<CompilerLabs::Logs::LogEntrySubdata> extras) {
             // log
-            LogAny(CompilerLabs::EntryType::CriticalError, message, false, true, extras);
+            LogAny(CompilerLabs::Logs::EntryType::CriticalError, message, false, true, extras);
         }
         void LogCriticalError(std::string message) {
             // log
-            LogAny(CompilerLabs::EntryType::CriticalError, message, false, true, {});
+            LogAny(CompilerLabs::Logs::EntryType::CriticalError, message, false, true, {});
         }
 
         // check any error occured
